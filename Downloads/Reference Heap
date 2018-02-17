@@ -1,0 +1,562 @@
+File name: heap.h
+#include <iostream>
+#include <cstdlib>
+#include <cmath>
+#include <climits>
+using namespace std;
+#ifndef HEAP_H
+#define   HEAP_H
+
+struct Element
+{
+    int keyElement;
+};
+class HEAP {
+    public:
+        HEAP ();
+        HEAP (int, int, Element[]);
+        HEAP (int, int, int);
+        HEAP (int, int);
+        ~HEAP(void);
+        void addIntoHeap(HEAP, int);
+    
+        void size_set(int fsize) {end_size=fsize;}
+    
+        int size_get() {return heapSize;}
+        void size_set(int vn) {heapSize=vn;}
+        void size_inc() {heapSize++;}
+        void dec_size() {heapSize--;}
+        int capacity_get() {return hapCapa;}
+    
+    
+        Element element_get(int vn) {return element[(vn-1)];}
+        void element_key_set(int heapNode, int keyElement) {this->element[(heapNode-1)].keyElement = keyElement;}
+        void element_set(int heapNode, Element ith_elem) {this->element[(heapNode-1)] = ith_elem;}
+        int parent_get(int heapNode)
+        {
+            if(heapNode == 1)
+                return NULL;
+            else
+                return floor(heapNode/2);
+        }
+         Element get_parent_element(int heapNode)
+        {
+           return (this->element_get(this->parent_get(heapNode)));
+        }
+        bool parent_has_two_children(int heapNode)
+        {
+            if(this->heapSize >= this->parent_get(heapNode)*2+1)
+                return true;
+            else
+                return false;
+        }
+        Element get_right_child_element(int heapNode)
+        {
+            return this->element_get((2*heapNode)+1);
+        }
+        int get_right_child(int heapNode)
+        {
+            if(2*heapNode+1 <= this->heapSize)
+                return heapNode*2+1;
+            else
+                return INT_MAX;
+        }
+        Element get_left_child_element(int heapNode)
+        {
+            return this->element_get(2*heapNode);
+        }
+        int get_left_child(int heapNode)
+        {
+            if(heapNode*2 <= this->size_get())
+                return heapNode*2;
+            else
+                return INT_MAX;
+        }
+        bool is_element(int heapNode)
+        {
+            if(heapNode <= this->heapSize)
+                return true;
+            else
+                return false;
+        }
+        void swap_with_parent(int heapNode)
+        {
+        
+            Element parent_element = this->get_parent_element(heapNode);
+            this->element_set(this->parent_get(heapNode), this->element_get(heapNode));
+            this->element_set(heapNode, parent_element);
+            return;
+        }
+
+        int swap_with_right_child(int heapNode)
+        {
+             Element current_element = this->element_get(heapNode);
+            this->element_set(heapNode, this->get_right_child_element(heapNode));
+            this->element_set(this->get_right_child(heapNode), current_element);
+            return this->get_right_child(heapNode);
+        }
+        int swap_with_left_child(int heapNode)
+        {
+             Element current_element = this->element_get(heapNode);
+            this->element_set(heapNode, this->get_left_child_element(heapNode));
+            this->element_set(this->get_left_child(heapNode), current_element);
+            return this->get_left_child(heapNode);
+        }
+
+    private:
+        int hapCapa;
+        int heapSize;
+        int end_size;
+        Element *element;
+    
+
+};
+
+HEAP InitializeHeap(int);
+int DeleteMaxHeap(HEAP&);
+void InsertToHeap(HEAP&, Element);
+void addIntoHeap(HEAP&, int);
+void BuildHeap(HEAP&, Element[], int);
+void IncreaseKeyHeap(HEAP&, int, int);
+void PrintHeap(HEAP);
+void Heapify(HEAP&, int);
+void Sort_Heap(HEAP&);
+#endif   /* HEAP_H */
+
+File name: Heap.cpp
+#include <iostream>
+#include <cstdlib>
+#include <stdio.h>
+
+using namespace std;
+#include "heap.h"
+#include "debug.h"
+
+HEAP::HEAP(int capa_heap, int size_heap, Element element_heap[])
+{
+    hapCapa = capa_heap;
+    heapSize = size_heap;
+    element = new Element[capa_heap];
+
+    for(int vi = 0 ; vi < size_heap ; vi++ )
+    {
+        element[vi] = element_heap[vi];
+    }
+}
+HEAP::HEAP()
+{
+}
+HEAP::HEAP(int capa_heap, int size_heap)
+{
+    hapCapa = capa_heap;
+    element = new Element[capa_heap];
+    heapSize = size_heap;
+}
+HEAP::~HEAP(void)
+{
+    element = new Element[1];
+    delete[] element;
+}
+
+HEAP InitializeHeap(int capa_heap)
+{
+    HEAP return_heap(capa_heap, 0);
+    return return_heap;
+}
+
+void BuildHeap(HEAP &heap_i, Element va[], int heapSize)
+{
+    int init_size = heap_i.size_get();
+
+    debug("heapSize of va", heapSize);
+    debug("Size before build heap", heap_i.size_get());
+
+    //Make the heap in the order of the array
+    for (int vi = init_size ; vi < heapSize+init_size&& vi < heap_i.capacity_get(); vi++)
+    {
+        if(vi > heap_i.capacity_get())
+            cout << "Error!!!";
+        InsertToHeap(heap_i, va[vi-init_size]);
+    }
+
+    debug("Size of the heap after build heap", heap_i.size_get());
+    debug(heap_i.element_get(0).keyElement);
+    debug("vi",floor(heap_i.size_get()/2));
+    for(int vi=floor(heap_i.size_get()/2); vi >= 1 ; vi--)
+    {
+        Heapify(heap_i, vi);
+    }
+}
+
+void InsertToHeap(HEAP &heap_i, Element ith_elem)
+{
+    heap_i.size_inc();
+    heap_i.element_set(heap_i.size_get(), ith_elem);
+}
+
+void Heapify(HEAP &heap_i, int element)
+{
+    debug("Heapify");
+    int key_left, key_right, big;
+    int head = heap_i.element_get(element).keyElement;
+    int left_node = heap_i.get_left_child(element);
+    int right_node = heap_i.get_right_child(element);
+    if(left_node <= heap_i.size_get())
+    {
+        key_left = heap_i.get_left_child_element(element).keyElement;
+        if(key_left > head)
+            big = left_node;
+        else
+            big = element;
+    }
+    else
+        big = element;
+    if(right_node <= heap_i.size_get())
+    {
+        key_right = heap_i.get_right_child_element(element).keyElement;
+        if(key_right > heap_i.element_get(big).keyElement)
+            big = right_node;
+    }
+    if(big != element)
+    {
+        Element largest_element = heap_i.element_get(big);
+        heap_i.element_set(big, heap_i.element_get(element));
+        heap_i.element_set(element, largest_element);
+        Heapify(heap_i, big);
+    }
+}
+void addIntoHeap(HEAP &heap_i, int keyElement)
+{
+    Element new_element;
+    new_element.keyElement = keyElement;
+    InsertToHeap(heap_i, new_element);
+    for(int vi=floor(heap_i.size_get()/2); vi >= 1 ; vi--)
+    {
+        Heapify(heap_i, vi);
+    }
+}
+int DeleteMaxHeap(HEAP &heap_i)
+{
+    Element deleted_element = heap_i.element_get(1);
+    heap_i.element_set(1, heap_i.element_get(heap_i.size_get()));
+    heap_i.dec_size();
+    for(int vi=floor(heap_i.size_get()/2); vi >= 1 ; vi--)
+    {
+        Heapify(heap_i, vi);
+    }
+    return deleted_element.keyElement;
+}
+
+void IncreaseKeyHeap(HEAP &heap_i, int element, int keyElement)
+{
+    heap_i.element_key_set(element, keyElement);
+    while(element > 1 && heap_i.get_parent_element(element).keyElement < keyElement)
+    {
+        heap_i.swap_with_parent(element);
+        element = heap_i.parent_get(element);
+    }
+}
+void PrintHeap(HEAP heap_i)
+{
+    cout << heap_i.capacity_get() << "\n";
+    cout << heap_i.size_get() << "\n";
+    for (int vi=1 ; vi <= heap_i.size_get() ; vi++)
+    {
+        cout << heap_i.element_get(vi).keyElement << "\n";
+    }
+}
+
+Filename: util.h
+#ifndef UTIL_H
+#define   UTIL_H
+int nextCommand(int& , int&);
+void errorOut(int);
+void warningOut(int);
+#endif   /*UTIL_H */
+
+Filename: util.cpp
+#include "util.h"
+#include <iostream>
+#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
+#include <cstring>
+using namespace std;
+
+int nextCommand(int& vi, int& ne)
+{
+char c;
+while(1)
+{
+    scanf("%c", &c);
+    if(c == ' ' || c == '\t' || c == '\vn')
+    {
+       continue;
+   }
+    if(c == 'S' || c == 'R' || c == 'W' || c == 'D' )
+    {
+        break;
+    }
+    if(c == 's' || c == 'r' || c == 'w' || c == 'd' )
+    {
+       break;
+   }
+    if(c == 'K' || c == 'k')
+    {
+        scanf("%d",& vi);
+        scanf("%d",& ne);
+        break;
+   }
+   if (c == 'C' || c == 'c')
+   {
+       scanf("%d", &vi);
+       break;
+   }
+   if(c == 'I' || c == 'vi')
+   {
+       scanf("%d", &vi);
+       break;
+   }
+    printf("Invalid Command\n");
+}
+return c;
+}
+void errorOut(int error_code)
+{
+   cout << "ERROR: ";
+   switch(error_code)
+   {
+   case 1:
+       cout << "No heap is created\n";
+       break;
+   case 2:
+       cout << "Heap is already there\n";
+       break;
+   case 3:
+       cout << "The heap has hit the compasity\n";
+       break;
+   case 4:
+       cout << "Enter a value greater than current\n";
+       break;
+   case 5:
+       cout << "capacity can not be negative\n";
+       break;
+   case 6:
+       cout << "The input file not exists\n";
+       break;
+   case 7:
+       cout << "Size should be positive\n";
+       break;
+   case 8:
+       cout << "The required element is beyond teh size\n";
+       break;
+   case 9:
+       cout << "Size is 0, can't delete\n";
+       break;
+   default:
+       cout << "Exiting!!!";
+       exit(0);
+       break;
+   }
+}
+void warningOut(int warning_code)
+{
+   cout << "WARNING: ";
+   switch(warning_code)
+   {
+       case 1:
+           cout << "MORE LINES IN THE THE INPUT FILE THAN LISTED AT THE TOP - ONLY READING THE NUMBER OF LINES LISTED AT THE TOP\n";
+           break;
+       case 2:
+           cout << "NUMBER FROM FILE DOSENT APPARE TO BE A NUMBER (OR IS 0)\vn";
+           break;
+       case 3:
+           cout << "REQUESTED TO READ MORE LINES THE THE CAPACITY IS SET TO - WILL ONLY READ UPTO THE CAPACITY\n";
+           break;
+       default:
+           cout << "UNKNOWN WARRNING... CONTINUING PROGRAM\n";
+           break;
+   }
+}
+
+Filename: fileio.h
+#ifndef FILEIO_H
+#define   FILEIO_H
+#include "heap.h"
+int ReadInputFile();
+void ReadInputFile(HEAP&, Element[], int);
+#endif   /*FILEIO_H */
+
+Filename: fileio.cpp
+
+File name: debug.h
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+#ifndef DEBUG_H
+#define   DEBUG_H
+
+void debug(string);
+void debug(int);
+void debug(string, int);
+#endif   /* DEBUG_H */
+
+File name: debug.cpp
+#include <cstdlib>
+#include <iostream>
+#include <string>
+using namespace std;
+int correct=0;
+void debug(string disp)
+{
+    if(correct == 1)
+    {
+        cout << "correct:\n";
+        cout << disp<< "\n";
+    }
+}
+void debug(int disp)
+{
+    if(correct == 1)
+    {
+        cout << "correct:\n";
+        cout << disp<< "\n";
+    }
+}
+void debug(string info, int disp)
+{
+    if(correct == 1)
+    {
+        cout << "correct: "<< info << "\n";
+        cout << disp<< "\n";
+    }
+}
+File: Main.cpp
+#include <cstdlib>
+#include <iostream>
+#include <cmath>
+#include <stdio.h>
+#include "heap.h"
+#include "debug.h"
+#include "util.h"
+#include "fileio.h"
+bool com_disp = false;
+using namespace std;
+Element *va;
+void MakeElementArray(int heapSize)
+{
+    va = new Element[heapSize];
+}
+int main(int argc, char** argv) {
+    int vi, ne;
+    HEAP heap;
+    bool heap_created = false;
+    char command= 'n';
+    char exit_command = 's';
+    while( command != exit_command)
+    {
+        if(com_disp){cout << "Waiting for next command\n";}
+        command = nextCommand(vi, ne);
+    
+        switch (command)
+        {
+            case 'k':
+            case 'K':
+                if(com_disp){printf("COMMAND: %c %d %d\n", command, vi, ne);}
+                if(heap_created)
+                {
+                    if(vi > heap.size_get())
+                    {
+                        errorOut(8);
+                    }
+                    if(ne > heap.element_get(vi).keyElement)
+                        IncreaseKeyHeap(heap, vi, ne);
+                    else
+                        errorOut(4);
+                }
+                else
+                    errorOut(1);
+                break;
+            case 'r':
+            case 'R':
+                if(com_disp){printf("COMMAND: %c\n", command);}
+                if(heap_created)
+                {
+                    int heapSize;
+                    heapSize = ReadInputFile();
+                    if(heapSize == 0)
+                        break;
+                    MakeElementArray(heapSize);
+                    ReadInputFile(heap, va, heapSize);
+                    BuildHeap(heap, va, heapSize);
+                }
+                else
+                    errorOut(1);
+                break;
+            case 'w':
+            case 'W':
+                if(com_disp){printf("COMMAND: %c\n", command);}
+                if(heap_created)
+                    PrintHeap(heap);
+                else
+                    errorOut(1);
+                break;
+            case 'vi':
+            case 'I':
+                if(com_disp){printf("COMMAND %c %d \n", command, vi);}
+                if(heap_created)
+                {
+                    if(heap.size_get() < heap.capacity_get())
+                        addIntoHeap(heap, vi);
+                    else
+                        errorOut(3);
+                }
+                else
+                    errorOut(1);
+                break;
+            case 'd':
+            case 'D':
+                if(com_disp){printf("COMMAND: %c\n", command);}
+                if(heap_created)
+                {
+                    if(heap.size_get() <= 0)
+                    {
+                        errorOut(9);
+                        break;
+                    }
+                    else
+                        cout << DeleteMaxHeap(heap) << "\n";
+                }
+                else
+                    errorOut(1);
+                break;
+            case 'c':
+            case 'C':
+                if(com_disp){printf("COMMAND: %c %d\n", command, vi);}
+                if(!heap_created)
+                {
+                    if(vi > 0)
+                    {
+                        heap = InitializeHeap(vi);
+                        heap_created = true;
+                    }
+                    else
+                        errorOut(5);
+                }
+                else
+                    errorOut(2);
+                break;
+            case 's':
+            case 'S':
+                if(com_disp)
+                {
+                    cout << "COMMAND: " << command << "\n";
+                    cout << "\nExiting.. Goodbye!\n";
+                }
+                command = 's';
+                break;
+            default: break;
+        }
+    }
+    return 0;
+}
