@@ -1,7 +1,34 @@
+
 #include <iostream>
 #include <algorithm>
+#include <cstdio>
+#include <fstream>
+#include <iostream>
 #include <vector>
+
+#include "json.hpp"
 using namespace std;
+
+
+nlohmann::json verifySorted(const std::vector<int>& sample);
+
+int main(int argc, char** argv) {
+	if (argc != 2) {
+		printf("Usage: %s inputFile\n", argv[0]);
+		return EXIT_FAILURE;
+	}
+
+	// Get samples
+	std::string inputFilename(argv[1]);
+	std::ifstream inputFile;
+	inputFile.open(inputFilename.c_str());
+	nlohmann::json samples;
+	if (inputFile.is_open()) {
+		inputFile >> samples;
+	} else {
+		printf("Unable to open file %s\n", inputFilename.c_str());
+		return EXIT_FAILURE;
+	}
 
 int main () {
 int myints[] = {JSON}; //I want it to call from JSON here
