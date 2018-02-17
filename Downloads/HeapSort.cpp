@@ -12,6 +12,7 @@ cout << "Initial max heap : " << v.front() << endl;
 
 pop_heap (v.begin(),v.end()); v.pop_back();
 cout << "max heap after pop : " << v.front() << endl;
+	//need to store the value that is popped out at the end of ann array large enough to hold all the values +1
 
 v.push_back(99); push_heap (v.begin(),v.end());
 cout << "max heap after push: " << v.front() << endl;
