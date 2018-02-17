@@ -5,7 +5,7 @@ using namespace std;
 
 int main () {
 int myints[] = {JSON}; //I want it to call from JSON here
-vector<int> v(JSON, JSON); //Want it to turn JSON into vector array
+vector<int> v(JSON, JSON); //Want it to turn JSON into vector array so I can turn it into a heap below.
 
 make_heap (v.begin(),v.end());
 cout << "Initial max heap : " << v.front() << endl;
