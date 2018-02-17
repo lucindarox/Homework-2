@@ -27,7 +27,7 @@ cout << endl;
 return 0;
 } 
 
---------------
+--------------//below this line, is another code that I'm trying to work with.
 	/*
 
   heapSort example using priority queue from Sedgewick's Algorithms in C++
