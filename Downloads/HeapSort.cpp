@@ -79,7 +79,7 @@ cout << endl;
 return 0;
 } 
 
---------------//below this line, is another code that I'm trying to work with.
+--------------//below this line, is another code that I'm trying to reference so I can understand how the heapsort is supposed to work.
 	/*
 
   heapSort example using priority queue from Sedgewick's Algorithms in C++
