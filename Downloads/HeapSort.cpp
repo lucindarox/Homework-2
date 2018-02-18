@@ -7,8 +7,10 @@
 #include <vector>
 
 #include "json.hpp"
-using namespace std;
+#include "PriorityQueue.h"
 
+using namespace std;
+using json = nlohmann::json;
 
 nlohmann::json verifySorted(const std::vector<int>& sample);
 
@@ -30,6 +32,29 @@ int main(int argc, char** argv) {
 		return EXIT_FAILURE;
 	}
 
+	/*
+Class Stack
+valueStack := empty stack
+minStack := empty stack
+	
+	procedure top()
+		return (valueStack.top(), minStack.top())
+	
+	procedure push(value)
+		if stack.is.Empty() then
+			valueStack.push(value)
+			minStack.push(value)
+		else
+			valueStack.push(value)
+			minStack.push(min(value, minStack.top()))
+		end if
+	procedure pop()
+			valueStack.pop()
+			minStack.pop()
+	procedure min()
+			return minStack.top()
+		*/
+			
 int main () {
 int myints[] = {JSON}; //I want it to call from JSON here
 vector<int> v(JSON, JSON); //Want it to turn JSON into vector array so I can turn it into a heap below.
@@ -39,7 +64,7 @@ cout << "Initial max heap : " << v.front() << endl;
 
 pop_heap (v.begin(),v.end()); v.pop_back();
 cout << "max heap after pop : " << v.front() << endl;
-	//need to store the value that is popped out at the end of ann array large enough to hold all the values +1
+	//need to store the value that is popped out at the end of an array large enough to hold all the values +1
 
 v.push_back(99); push_heap (v.begin(),v.end());
 cout << "max heap after push: " << v.front() << endl;
