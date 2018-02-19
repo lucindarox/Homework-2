@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
 		return EXIT_FAILURE;
 	}
 	
-	//creat an array using push_back
+	//creat an array using push_back from https://github.com/nlohmann/json
 	json j;
 	j.push_back("foo");
 	j.push_back(1);
@@ -99,22 +99,15 @@ vector<int> v(); //Want it to turn JSON into vector array so I can turn it into 
 
 make_heap (v.begin(),v.end());
 
- cout << "heap:   ";
-    for (const auto &i : v) {
-     cout << i << ' ';
-    }   
-  
-
-/*pop_heap (v.begin(),v.end()); v.pop_back();
-cout << "max heap after pop : " << v.front() << endl;
+ /*pop_heap (v.begin(),v.end()); v.pop_back(); //this pops the value
 	//need to store the value that is popped out at the end of an array large enough to hold all the values +1
 
-v.push_back(99); push_heap (v.begin(),v.end());
-cout << "max heap after push: " << v.front() << endl;
+v.push_back(); push_heap (v.begin(),v.end()); //place a number into the heap
+
 */
    sort_heap(v.begin(), v.end());
   
-    std::cout <<endl<< "now sorted:   ";
+    std::cout <<endl<< "Sorted:   ";
     for (const auto &i : v) {                                                   
         cout << i << ' ';
     }   
