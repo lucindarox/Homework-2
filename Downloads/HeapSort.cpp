@@ -95,11 +95,15 @@ minStack := empty stack
 		*/
 			
 int main () {
-int myints[] = {j}; //I want it to call from JSON here
-vector<int> v(j, j+1); //Want it to turn JSON into vector array so I can turn it into a heap below.
+vector<int> v(); //Want it to turn JSON into vector array so I can turn it into a heap below.
 
 make_heap (v.begin(),v.end());
-cout << "Initial max heap : " << v.front() << endl;
+
+ cout << "heap:   ";
+    for (const auto &i : v) {
+     cout << i << ' ';
+    }   
+  
 
 /*pop_heap (v.begin(),v.end()); v.pop_back();
 cout << "max heap after pop : " << v.front() << endl;
@@ -108,12 +112,13 @@ cout << "max heap after pop : " << v.front() << endl;
 v.push_back(99); push_heap (v.begin(),v.end());
 cout << "max heap after push: " << v.front() << endl;
 */
-sort_heap (v.begin(),v.end());
-
-cout << "final sorted range :";
-for (unsigned i=0; i<v.size(); i++) cout << " " << v[i];
-
-cout << endl;
+   sort_heap(v.begin(), v.end());
+  
+    std::cout <<endl<< "now sorted:   ";
+    for (const auto &i : v) {                                                   
+        cout << i << ' ';
+    }   
+    std::cout <<endl;
 
 return 0;
 } 
