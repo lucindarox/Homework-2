@@ -105,6 +105,10 @@ make_heap (v.begin(),v.end());
 v.push_back(); push_heap (v.begin(),v.end()); //place a number into the heap
 
 */
+
+/*swap();
+	if v[0] > v[1]
+*/	
    sort_heap(v.begin(), v.end());
   
     std::cout <<endl<< "Sorted:   ";
